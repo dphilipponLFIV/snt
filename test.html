@@ -2,11 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Environnement VR avec Collisions</title>
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-  <!-- Intégration du système physique -->
- <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@5.0.0/dist/aframe-physics-system.min.js"></script>
-  <!-- Composants mouvement compatibles -->
+  <title>Environnement VR - Version corrigée</title>
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <!-- Version VALIDE 4.0.2 -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.2/dist/aframe-physics-system.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
 </head>
 <body>
@@ -19,8 +18,8 @@
       static-body 
       position="0 0 0" 
       rotation="-90 0 0" 
-      width="100" 
-      height="100" 
+      width="30" 
+      height="30" 
       color="#7CFC00">
     </a-plane>
     
@@ -34,13 +33,12 @@
       color="#FF0000">
     </a-box>
     
-    <!-- Joueur avec contrôle de mouvement -->
-    <a-entity id="rig" kinematic-body position="0 1.6 0">
+    <!-- Joueur -->
+    <a-entity id="rig" 
+              kinematic-body 
+              position="0 1.6 0"
+              movement-controls="fly: false; speed: 0.2">
       <a-camera></a-camera>
-      <a-entity 
-        movement-controls="fly: false; speed: 0.2"
-        hand-controls="hand: left">
-      </a-entity>
     </a-entity>
   </a-scene>
 </body>
