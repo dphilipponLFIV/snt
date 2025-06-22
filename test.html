@@ -5,26 +5,17 @@
   <title>Monde VR avec Collisions Fonctionnelles</title>  
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <!-- Composant de collision personnalisé -->
-  <script>
-    AFRAME.registerComponent('wall-collision', {
-      init: function() {
-        this.el.addEventListener('collide', this.handleCollision.bind(this));
-      },
-      handleCollision: function(e) {
-        const player = document.querySelector('#rig');
-        player.setAttribute('position', this.lastSafePosition);
-      }
-    });
-  </script>
+  <!-- Intégration du système physique -->
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
 </head>
 <body>
-  <a-scene>
+  <a-scene physics="debug: false; gravity: 0">
     <!-- Ciel bleu -->
     <a-sky color="#87CEEB"></a-sky>
     
-    <!-- Sol vert -->
+    <!-- Sol vert (avec corps statique) -->
     <a-plane 
+      static-body
       position="0 0 0" 
       rotation="-90 0 0" 
       width="30" 
@@ -32,79 +23,54 @@
       color="#7CFC00">
     </a-plane>
     
-    <!-- Murs rouges avec collisions -->
+    <!-- Murs avec collisions (corps statiques) -->
     <!-- Mur avant -->
-    <a-box id="wall-front"
+    <a-box
+      static-body
       position="0 2.5 -14.5"
       width="30"
       height="5"
       depth="1"
-      color="#FF0000"
-      wall-collision>
+      color="#FF0000">
     </a-box>
     
     <!-- Mur arrière -->
-    <a-box id="wall-back"
+    <a-box
+      static-body
       position="0 2.5 14.5"
       width="30"
       height="5"
       depth="1"
-      color="#FF0000"
-      wall-collision>
+      color="#FF0000">
     </a-box>
     
     <!-- Mur gauche -->
-    <a-box id="wall-left"
+    <a-box
+      static-body
       position="-14.5 2.5 0"
       width="1"
       height="5"
       depth="30"
-      color="#FF0000"
-      wall-collision>
+      color="#FF0000">
     </a-box>
     
     <!-- Mur droit -->
-    <a-box id="wall-right"
+    <a-box
+      static-body
       position="14.5 2.5 0"
       width="1"
       height="5"
       depth="30"
-      color="#FF0000"
-      wall-collision>
+      color="#FF0000">
     </a-box>
     
-    <!-- Joueur avec mouvement terrestre -->
+    <!-- Joueur avec corps cinématique -->
     <a-entity id="rig" 
+              kinematic-body
               position="0 1.6 0"
               movement-controls="fly: false; speed: 0.15">
       <a-camera></a-camera>
-      
-      <!-- Zone de collision invisible autour du joueur -->
-      <a-sphere id="player-collider"
-                radius="0.5"
-                position="0 0 0"
-                visible="false"
-                wall-collision>
-      </a-sphere>
     </a-entity>
-    
-    <!-- Système de suivi de position -->
-    <script>
-      const player = document.querySelector('#rig');
-      const colliders = document.querySelectorAll('[wall-collision]');
-      
-      let lastSafePosition = {x: 0, y: 1.6, z: 0};
-      
-      setInterval(() => {
-        // Sauvegarde la position valide chaque 100ms
-        lastSafePosition = player.getAttribute('position');
-        
-        // Met à jour la position des colliders
-        colliders.forEach(wall => {
-          wall.components['wall-collision'].lastSafePosition = {...lastSafePosition};
-        });
-      }, 100);
-    </script>
   </a-scene>
 </body>
 </html>
