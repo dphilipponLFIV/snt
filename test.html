@@ -1,12 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">  
+  <meta charset="utf-8">
+  <title>Monde VR avec Collisions Fonctionnelles</title>  
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-  <title>Monde VR avec Collisions Fonctionnelles</title>
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <!-- Composant de collision éprouvé -->
-  <script src="https://cdn.jsdelivr.net/gh/kennardconsulting/aframe-reset-on-collision@master/reset-on-collision.js"></script>
+  <!-- Composant de collision personnalisé -->
+  <script>
+    AFRAME.registerComponent('wall-collision', {
+      init: function() {
+        this.el.addEventListener('collide', this.handleCollision.bind(this));
+      },
+      handleCollision: function(e) {
+        const player = document.querySelector('#rig');
+        player.setAttribute('position', this.lastSafePosition);
+      }
+    });
+  </script>
 </head>
 <body>
   <a-scene>
@@ -22,51 +32,79 @@
       color="#7CFC00">
     </a-plane>
     
-    <!-- Murs rouges avec classe "wall" pour la collision -->
+    <!-- Murs rouges avec collisions -->
     <!-- Mur avant -->
-    <a-box class="wall"
+    <a-box id="wall-front"
       position="0 2.5 -14.5"
       width="30"
       height="5"
       depth="1"
-      color="#FF0000">
+      color="#FF0000"
+      wall-collision>
     </a-box>
     
     <!-- Mur arrière -->
-    <a-box class="wall"
+    <a-box id="wall-back"
       position="0 2.5 14.5"
       width="30"
       height="5"
       depth="1"
-      color="#FF0000">
+      color="#FF0000"
+      wall-collision>
     </a-box>
     
     <!-- Mur gauche -->
-    <a-box class="wall"
+    <a-box id="wall-left"
       position="-14.5 2.5 0"
       width="1"
       height="5"
       depth="30"
-      color="#FF0000">
+      color="#FF0000"
+      wall-collision>
     </a-box>
     
     <!-- Mur droit -->
-    <a-box class="wall"
+    <a-box id="wall-right"
       position="14.5 2.5 0"
       width="1"
       height="5"
       depth="30"
-      color="#FF0000">
+      color="#FF0000"
+      wall-collision>
     </a-box>
     
-    <!-- Joueur avec système de collision -->
-    <a-entity id="player"
+    <!-- Joueur avec mouvement terrestre -->
+    <a-entity id="rig" 
               position="0 1.6 0"
-              reset-on-collision="with: .wall">
+              movement-controls="fly: false; speed: 0.15">
       <a-camera></a-camera>
-      <!-- Contrôles de mouvement -->
-      <a-entity movement-controls="fly: false; speed: 0.15"></a-entity>
+      
+      <!-- Zone de collision invisible autour du joueur -->
+      <a-sphere id="player-collider"
+                radius="0.5"
+                position="0 0 0"
+                visible="false"
+                wall-collision>
+      </a-sphere>
     </a-entity>
+    
+    <!-- Système de suivi de position -->
+    <script>
+      const player = document.querySelector('#rig');
+      const colliders = document.querySelectorAll('[wall-collision]');
+      
+      let lastSafePosition = {x: 0, y: 1.6, z: 0};
+      
+      setInterval(() => {
+        // Sauvegarde la position valide chaque 100ms
+        lastSafePosition = player.getAttribute('position');
+        
+        // Met à jour la position des colliders
+        colliders.forEach(wall => {
+          wall.components['wall-collision'].lastSafePosition = {...lastSafePosition};
+        });
+      }, 100);
+    </script>
   </a-scene>
 </body>
 </html>
