@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Environnement VR - Version corrigée</title>
+  <title>Environnement VR - Collisions Fix</title>
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <!-- Version VALIDE 4.0.2 -->
+  <!-- Version corrigée avec THREE.Geometry -->
   <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.2/dist/aframe-physics-system.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
 </head>
@@ -13,17 +13,18 @@
     <!-- Ciel bleu -->
     <a-sky color="#87CEEB"></a-sky>
     
-    <!-- Sol vert -->
+    <!-- Sol vert avec nav-mesh -->
     <a-plane 
       static-body 
       position="0 0 0" 
       rotation="-90 0 0" 
       width="30" 
       height="30" 
-      color="#7CFC00">
+      color="#7CFC00"
+      nav-mesh>  <!-- Ajout du composant nav-mesh -->
     </a-plane>
     
-    <!-- Murs rouges -->
+    <!-- Mur rouge avec corps statique -->
     <a-box
       static-body
       position="0 2.5 -5"
@@ -33,11 +34,11 @@
       color="#FF0000">
     </a-box>
     
-    <!-- Joueur -->
+    <!-- Joueur avec mouvement terrestre -->
     <a-entity id="rig" 
               kinematic-body 
               position="0 1.6 0"
-              movement-controls="fly: false; speed: 0.2">
+              movement-controls="fly: false; speed: 0.2; constrainToNavMesh: true">
       <a-camera></a-camera>
     </a-entity>
   </a-scene>
