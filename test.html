@@ -3,8 +3,18 @@
 <head>
   <meta charset="utf-8">
   <title>Monde VR avec Collisions Fonctionnelles</title>  
-  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  
+  <!-- Polyfill pour THREE.Geometry -->
+  <script>
+    if (!THREE.Geometry) {
+      THREE.Geometry = function() { 
+        console.warn('Geometry stub used');
+      };
+    }
+  </script>
+  
   <!-- Version corrigée du système physique -->
   <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.2/dist/aframe-physics-system.min.js"></script>
 </head>
