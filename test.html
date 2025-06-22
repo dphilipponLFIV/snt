@@ -1,46 +1,76 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projet AR.js avec Favicon</title>
-    
-    <!-- Intégration de votre favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">    
-    <!-- Bibliothèques A-Frame et AR.js -->
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Monde VR avec Collisions Fonctionnelles</title>  
+  <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <!-- Version corrigée du système physique -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.2/dist/aframe-physics-system.min.js"></script>
 </head>
 <body>
-    <!-- Scène AR.js avec correction Geometry -->
-    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
-        <!-- Marqueur personnalisé -->
-        <a-marker type="pattern" url="chemin/vers/votre-pattern.patt">
-            <!-- Utilisation de BufferGeometry à la place de Geometry -->
-            <a-entity geometry="primitive: box" material="color: red" scale="0.5 0.5 0.5"></a-entity>
-        </a-marker>
-        
-        <!-- Caméra AR -->
-        <a-entity camera></a-entity>
-    </a-scene>
-
-    <script>
-        // Correction pour les anciens composants utilisant Geometry
-        if (THREE) {
-            THREE.Geometry = THREE.BufferGeometry;
-        }
-        
-        // Vérification du chargement
-        document.querySelector('a-scene').addEventListener('loaded', function() {
-            console.log("Scène AR prête !");
-        });
-    </script>
+  <a-scene physics="debug: false; gravity: 0">
+    <!-- Ciel bleu -->
+    <a-sky color="#87CEEB"></a-sky>
+    
+    <!-- Sol vert (avec corps statique) -->
+    <a-plane 
+      static-body
+      position="0 0 0" 
+      rotation="-90 0 0" 
+      width="30" 
+      height="30" 
+      color="#7CFC00">
+    </a-plane>
+    
+    <!-- Murs avec collisions (corps statiques) -->
+    <!-- Mur avant -->
+    <a-box
+      static-body
+      position="0 2.5 -14.5"
+      width="30"
+      height="5"
+      depth="1"
+      color="#FF0000">
+    </a-box>
+    
+    <!-- Mur arrière -->
+    <a-box
+      static-body
+      position="0 2.5 14.5"
+      width="30"
+      height="5"
+      depth="1"
+      color="#FF0000">
+    </a-box>
+    
+    <!-- Mur gauche -->
+    <a-box
+      static-body
+      position="-14.5 2.5 0"
+      width="1"
+      height="5"
+      depth="30"
+      color="#FF0000">
+    </a-box>
+    
+    <!-- Mur droit -->
+    <a-box
+      static-body
+      position="14.5 2.5 0"
+      width="1"
+      height="5"
+      depth="30"
+      color="#FF0000">
+    </a-box>
+    
+    <!-- Joueur avec corps cinématique -->
+    <a-entity id="rig" 
+              kinematic-body
+              position="0 1.6 0"
+              movement-controls="fly: false; speed: 0.15">
+      <a-camera></a-camera>
+    </a-entity>
+  </a-scene>
 </body>
 </html>
