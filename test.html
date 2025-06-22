@@ -2,44 +2,82 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Environnement VR - Collisions Fix</title>
+  <title>Monde VR A-Frame 1.7.0 - Collisions Fix</title>
+  <script>
+    // Patch temporaire pour la compatibilité physique avec A-Frame 1.7+
+    // À placer AVANT le chargement d'A-Frame et du physics-system
+    window.THREE = window.THREE || {};
+    // Si BufferGeometry existe mais pas Geometry, on fait pointer Geometry dessus
+    Object.defineProperty(window.THREE, 'Geometry', {
+      get: function() { return window.THREE.BufferGeometry; }
+    });
+  </script>
   <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-  <!-- Version corrigée avec THREE.Geometry -->
   <script src="https://cdn.jsdelivr.net/npm/aframe-physics-system@4.0.2/dist/aframe-physics-system.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@7.0.0/dist/aframe-extras.min.js"></script>
 </head>
 <body>
-  <a-scene physics="debug: false; gravity: -9.8;">
+  <a-scene physics="gravity: -9.8; debug: false;">
     <!-- Ciel bleu -->
     <a-sky color="#87CEEB"></a-sky>
     
-    <!-- Sol vert avec nav-mesh -->
-    <a-plane 
-      static-body 
-      position="0 0 0" 
-      rotation="-90 0 0" 
-      width="30" 
-      height="30" 
-      color="#7CFC00"
-      nav-mesh>  <!-- Ajout du composant nav-mesh -->
+    <!-- Sol vert, collision activée -->
+    <a-plane static-body
+             position="0 0 0"
+             rotation="-90 0 0"
+             width="30"
+             height="30"
+             color="#7CFC00"
+             shape="box"
+             half-extents="15 15 0.1">
     </a-plane>
     
-    <!-- Mur rouge avec corps statique -->
-    <a-box
-      static-body
-      position="0 2.5 -5"
-      width="10"
-      height="5"
-      depth="0.5"
-      color="#FF0000">
+    <!-- Mur rouge avant -->
+    <a-box static-body
+           position="0 2.5 -14.5"
+           width="30"
+           height="5"
+           depth="1"
+           color="#FF0000"
+           shape="box"
+           half-extents="15 2.5 0.5">
+    </a-box>
+    <!-- Mur rouge arrière -->
+    <a-box static-body
+           position="0 2.5 14.5"
+           width="30"
+           height="5"
+           depth="1"
+           color="#FF0000"
+           shape="box"
+           half-extents="15 2.5 0.5">
+    </a-box>
+    <!-- Mur rouge gauche -->
+    <a-box static-body
+           position="-14.5 2.5 0"
+           width="1"
+           height="5"
+           depth="30"
+           color="#FF0000"
+           shape="box"
+           half-extents="0.5 2.5 15">
+    </a-box>
+    <!-- Mur rouge droit -->
+    <a-box static-body
+           position="14.5 2.5 0"
+           width="1"
+           height="5"
+           depth="30"
+           color="#FF0000"
+           shape="box"
+           half-extents="0.5 2.5 15">
     </a-box>
     
-    <!-- Joueur avec mouvement terrestre -->
-    <a-entity id="rig" 
-              kinematic-body 
+    <!-- Joueur avec collisions et déplacement au sol uniquement -->
+    <a-entity id="rig"
               position="0 1.6 0"
-              movement-controls="fly: false; speed: 0.2; constrainToNavMesh: true">
-      <a-camera></a-camera>
+              kinematic-body="radius: 0.5; height: 1.6"
+              movement-controls="fly: false; speed: 0.15">
+      <a-camera wasd-controls-enabled="false"></a-camera>
     </a-entity>
   </a-scene>
 </body>
