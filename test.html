@@ -76,26 +76,12 @@ AFRAME.registerComponent('not-mobile',  {
           <a-cursor></a-cursor>
         </a-entity>
       </a-entity>
-
-      <!-- Teleport gems. -->
-      <a-entity id="wall-gem"
-                checkpoint="offset: 0 -0.8 0;"
-                position="-9 7 -6"
-                gltf-model="#gem"
-                scale="0.05 0.05 0.05"
-                glow="color: #33FF66; intensity: 0.5"
-                levitate>
-        <a-light not-mobile type="point" intensity="0.5" color="#33FF66" distance="2" position="0.5 -0.25 0"></a-light>
-      </a-entity>
-      <a-entity id="tower-gem"
-                checkpoint="offset: 0 -0.8 0;"
-                position="0 10.2 -3.5"
-                gltf-model="#gem"
-                scale="0.05 0.05 0.05"
-                glow="color: #33FF66; intensity: 0.5"
-                levitate>
-        <a-light not-mobile type="point" intensity="0.5" color="#33FF66" distance="2" position="0.5 -0.25 0"></a-light>
-      </a-entity>
+      <a-image src="manisa.jpg"
+                 position="0 0 0"
+                 rotation="-90 0 0"
+                 width="2"
+                 height="2">
+        </a-image>
 
 
       <a-text text="" scale="5 5 5" value="180" color="red" position="-20 5 0"></a-text>
