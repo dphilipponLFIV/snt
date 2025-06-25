@@ -31,6 +31,58 @@ AFRAME.registerComponent('glow', {
     });
   }
 });
+AFRAME.registerComponent('freeze-on-collision', {
+  schema: {
+    duration: { default: 2000 } // Durée du blocage en ms
+  },
+  
+  init: function() {
+    this.isFrozen = false;
+    this.originalControls = {};
+  },
+  
+  freeze: function() {
+    if (this.isFrozen) return;
+    
+    // Sauvegarder les contrôles actuels
+    this.originalControls = {
+      look: this.el.getAttribute('look-controls'),
+      movement: this.el.parentEl.components['movement-controls']
+    };
+    
+    // Désactiver les contrôles
+    this.el.removeAttribute('look-controls');
+    this.el.parentEl.removeAttribute('movement-controls');
+    
+    // Activer l'état gelé
+    this.isFrozen = true;
+    
+    // Ajouter un effet visuel (écran rouge)
+    const blocker = document.createElement('a-entity');
+    blocker.setAttribute('geometry', 'primitive: plane; width: 100; height: 100');
+    blocker.setAttribute('material', 'color: red; opacity: 0.3; transparent: true');
+    blocker.setAttribute('position', '0 0 -0.5');
+    blocker.setAttribute('class', 'freeze-effect');
+    this.el.appendChild(blocker);
+    
+    // Dégeler après la durée spécifiée
+    setTimeout(() => {
+      this.unfreeze();
+    }, this.data.duration);
+  },
+  
+  unfreeze: function() {
+    // Rétablir les contrôles
+    this.el.setAttribute('look-controls', this.originalControls.look);
+    this.el.parentEl.setAttribute('movement-controls', '');
+    
+    // Supprimer l'effet visuel
+    const blocker = this.el.querySelector('.freeze-effect');
+    if (blocker) blocker.parentNode.removeChild(blocker);
+    
+    this.isFrozen = false;
+  }
+});
 
 /**
  * Simple spin-and-levitate animation.
@@ -54,7 +106,8 @@ AFRAME.registerComponent('not-mobile',  {
       el.parentEl.remove(el);
     }
   }
-});AFRAME.registerComponent('follow-camera', {
+});
+      AFRAME.registerComponent('follow-camera', {
   schema: {
     speed: { default: 0.03 },
     threshold: { default: 1.5 }
@@ -65,21 +118,28 @@ AFRAME.registerComponent('not-mobile',  {
     this.camera = this.rig.querySelector('[camera]');
     this.initialRigPos = new THREE.Vector3(-7, 0, 21);
   },
+
   
   tick: function() {
     const camWorldPos = new THREE.Vector3();
     this.camera.object3D.getWorldPosition(camWorldPos);
     const followerPos = this.el.object3D.position;
     
-    // Déplacement
+    // Déplacement vers la caméra
     const direction = new THREE.Vector3();
     direction.subVectors(camWorldPos, followerPos).normalize();
     this.el.object3D.position.add(direction.multiplyScalar(this.data.speed));
     
-    // Collision
+    // Vérification de la distance
     const distance = followerPos.distanceTo(camWorldPos);
     if (distance < this.data.threshold) {
-      this.rig.object3D.position.copy(this.initialRigPos);
+      // Déclencher le gel de la caméra
+      const camera = document.querySelector('[camera]');
+      if (camera.components['freeze-on-collision']) {
+        camera.components['freeze-on-collision'].freeze();
+      }
+      
+      // Réinitialiser l'image
       this.el.object3D.position.set(
         (Math.random() - 0.5) * 10, 
         1.6, 
@@ -107,7 +167,8 @@ AFRAME.registerComponent('not-mobile',  {
                 position="-7 0 21">
         <a-entity camera
                   position="0 1.6 0"
-                  look-controls="pointerLockEnabled: true">
+                  look-controls="pointerLockEnabled: true"
+                  freeze-on-collision="duration: 2000">
           <a-cursor></a-cursor>
         </a-entity>
       </a-entity>
