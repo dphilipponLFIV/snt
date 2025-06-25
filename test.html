@@ -171,7 +171,18 @@ AFRAME.registerComponent('not-mobile',  {
                  rotation="0 -90 0"
                  width="2"
                  height="2">
-        </a-image>
+        </a-image>>
+      <a-image 
+        src="chat.png"
+        position="0 1.5 0"
+        animation="property: position; 
+                   dir: alternate; 
+                   dur: 8000; 
+                   to: 0 3 -3; 
+                   loop: true; 
+                   easing: linear">
+      </a-image>
+
 
 
       <a-text text="" scale="5 5 5" value="180" color="red" position="-20 5 0"></a-text>
