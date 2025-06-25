@@ -31,6 +31,25 @@ AFRAME.registerComponent('glow', {
     });
   }
 });
+      // Fonctions de gestion du Pointer Lock
+function lockPointer() {
+  const canvas = document.querySelector('canvas');
+  if (canvas) canvas.requestPointerLock();
+}
+
+function unlockPointer() {
+  document.exitPointerLock();
+}
+
+// Événements de suivi
+document.addEventListener('pointerlockchange', () => {
+  if (document.pointerLockElement) {
+    console.log("Pointer Lock activé");
+  } else {
+    console.log("Pointer Lock désactivé");
+  }
+});
+
 AFRAME.registerComponent('freeze-on-collision', {
   schema: {
     duration: { default: 2000 } // Durée du blocage en ms
@@ -54,6 +73,8 @@ AFRAME.registerComponent('freeze-on-collision', {
     this.el.removeAttribute('look-controls');
     this.el.parentEl.removeAttribute('movement-controls');
     
+    this.wasLocked = (document.pointerLockElement !== null);
+    unlockPointer(); // Désactiver le Pointer Lock
     // Activer l'état gelé
     this.isFrozen = true;
     
@@ -81,6 +102,14 @@ AFRAME.registerComponent('freeze-on-collision', {
     if (blocker) blocker.parentNode.removeChild(blocker);
     
     this.isFrozen = false;
+    if (this.wasLocked) {
+      setTimeout(() => {
+        lockPointer();
+        
+        // Réactiver les look-controls après un léger délai
+        this.el.setAttribute('look-controls', 'pointerLockEnabled: true');
+      }, 50);
+    }
   }
 });
 
