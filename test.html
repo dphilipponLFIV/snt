@@ -54,34 +54,32 @@ AFRAME.registerComponent('not-mobile',  {
       el.parentEl.remove(el);
     }
   }
-});
-      AFRAME.registerComponent('follow-camera', {
+});AFRAME.registerComponent('follow-camera', {
   schema: {
-    speed: { default: 0.03 },    // Vitesse de poursuite
-    threshold: { default: 1.5 }  // Distance déclenchant la réinitialisation
+    speed: { default: 0.03 },
+    threshold: { default: 1.5 }
   },
   
   init: function() {
-    // Stocker la position initiale de la caméra
-    this.initialCamPos = new THREE.Vector3(-7,0,21); 
-    this.camera = document.querySelector('[rig]');
+    this.rig = document.querySelector('#rig');
+    this.camera = this.rig.querySelector('[camera]');
+    this.initialRigPos = new THREE.Vector3(-7, 0, 21);
   },
   
   tick: function() {
-    const camPos = this.camera.object3D.position;
+    const camWorldPos = new THREE.Vector3();
+    this.camera.object3D.getWorldPosition(camWorldPos);
     const followerPos = this.el.object3D.position;
     
-    // 1. Déplacement vers la caméra
+    // Déplacement
     const direction = new THREE.Vector3();
-    direction.subVectors(camPos, followerPos).normalize();
+    direction.subVectors(camWorldPos, followerPos).normalize();
     this.el.object3D.position.add(direction.multiplyScalar(this.data.speed));
     
-    // 2. Vérification de la distance
-    const distance = followerPos.distanceTo(camPos);
+    // Collision
+    const distance = followerPos.distanceTo(camWorldPos);
     if (distance < this.data.threshold) {
-      // Réinitialiser la position de la caméra
-      this.camera.object3D.position.copy(this.initialCamPos);
-      // Réinitialiser l'image à une position aléatoire
+      this.rig.object3D.position.copy(this.initialRigPos);
       this.el.object3D.position.set(
         (Math.random() - 0.5) * 10, 
         1.6, 
@@ -90,6 +88,7 @@ AFRAME.registerComponent('not-mobile',  {
     }
   }
 });
+
 
     </script>
   </head>
