@@ -55,6 +55,42 @@ AFRAME.registerComponent('not-mobile',  {
     }
   }
 });
+      AFRAME.registerComponent('follow-camera', {
+  schema: {
+    speed: { default: 0.03 },    // Vitesse de poursuite
+    threshold: { default: 1.5 }  // Distance déclenchant la réinitialisation
+  },
+  
+  init: function() {
+    // Stocker la position initiale de la caméra
+    this.initialCamPos = new THREE.Vector3(0, 1.6, 0); 
+    this.camera = document.querySelector('[camera]');
+  },
+  
+  tick: function() {
+    const camPos = this.camera.object3D.position;
+    const followerPos = this.el.object3D.position;
+    
+    // 1. Déplacement vers la caméra
+    const direction = new THREE.Vector3();
+    direction.subVectors(camPos, followerPos).normalize();
+    this.el.object3D.position.add(direction.multiplyScalar(this.data.speed));
+    
+    // 2. Vérification de la distance
+    const distance = followerPos.distanceTo(camPos);
+    if (distance < this.data.threshold) {
+      // Réinitialiser la position de la caméra
+      this.camera.object3D.position.copy(this.initialCamPos);
+      // Réinitialiser l'image à une position aléatoire
+      this.el.object3D.position.set(
+        (Math.random() - 0.5) * 10, 
+        1.6, 
+        (Math.random() - 0.5) * 10 - 5
+      );
+    }
+  }
+});
+
     </script>
   </head>
 <body>
@@ -182,6 +218,10 @@ AFRAME.registerComponent('not-mobile',  {
                    loop: true; 
                    easing: linear">
       </a-image>
+      <a-entity id="follower" geometry="primitive: plane; width: 1; height: 1" 
+          material="src: url(chemin/vers/image.png)" 
+          follow-camera></a-entity>
+
 
 
 
