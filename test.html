@@ -74,7 +74,7 @@ AFRAME.registerComponent('freeze-on-collision', {
   unfreeze: function() {
     // Rétablir les contrôles
     this.el.setAttribute('look-controls', this.originalControls.look);
-    this.el.parentEl.setAttribute('movement-controls', '');
+    this.el.parentEl.setAttribute('movement-controls', 'constrainToNavMesh: true;controls: checkpoint, gamepad, trackpad, keyboard, nipple;');
     
     // Supprimer l'effet visuel
     const blocker = this.el.querySelector('.freeze-effect');
